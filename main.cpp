@@ -110,13 +110,15 @@ int main() {
   tuple<int, int> kingPos;
 
 
+
   while(gameOver != true){
 
     //General To Do list :
     // - retrieve pieces once a pion reach the other end of the map depending on the player (Done)
-    // - The game ending rules (50 consecutive checks and check mate)
+    // - The game ending rules (50 consecutive checks and check mate) (technically done)
     // - castling and en passant
     // - A.I. minimax with alpha beta pruning with dynamic programation of best moves.
+    // - reinforcing the dialog
 
     Player* player = turnOfPlayer == 1 ? &player1 : &player2 ;
 
@@ -124,9 +126,6 @@ int main() {
     //display some information about the  current player
     game.displayCheck(player, moveIsChecking);
     game.displayEatenPieces(player);
-
-
-
 
     do{
       //ask the player which piece he wants to move
@@ -166,31 +165,21 @@ int main() {
     turnOfPlayer == 1 ? kingPos = player2._getPlayerKingPos() : kingPos = player1._getPlayerKingPos();
     moveIsChecking = game.isMoveChecking(chessBoard, kingPos, &position, &threatPos, turnOfPlayer);
 
-    // cout<<"hello"<<endl;
-    // cout<<"the threat positions"<<endl;
-    // for (auto it : threatPos){
-    //   cout<<get<0>(it)<<" : "<< get<1>(it)<<endl;
-    // }
-
     turnOfPlayer = game.updateTurnOfPlayer(player);
     if(moveIsChecking){
       // cout<<"hello"<<endl;
 
       gameOver = game.endGameEval(chessBoard, moveIsChecking, &threatPos, player, turnOfPlayer);
+      // if gameOver ask for the players to play again
 
     }
-
-
     system("clear");
-
-
     game.displayBoard(chessBoard);
 
-    //flush the vectors (v and legalMoves and threats)
+    //flush the vectors (v ,legalMoves and threats)
     position.clear();
     legalMoves.clear();
     threatPos.clear();
-    // game.evalEnd();
 
 
   }

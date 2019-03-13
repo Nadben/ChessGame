@@ -484,8 +484,8 @@ void computingMoves(Board chessBoard[SIZEROW][SIZECOL],int x,int y, int turnOfPl
         hardCodedMove(x-1, y-1, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
         hardCodedMove(x-1, y+1, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
         hardCodedMove(x-1, y, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
-        hardCodedMove(x, y-2, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
-        hardCodedMove(x, y-2, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
+        hardCodedMove(x, y-1, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
+        hardCodedMove(x, y+1, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
         hardCodedMove(x+1, y-1, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
         hardCodedMove(x+1, y+1, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
         hardCodedMove(x+1, y, temp, chessBoard, turnOfPlayer, threatPos, &threatFound);
@@ -567,26 +567,27 @@ vector<int> Game::askPlayerPiece(Board chessBoard[SIZEROW][SIZECOL], Player* pla
   // To Do : make the input impossible to write anything else than ints between 0-7
 
 
-  //to change for saying player name instead of himself
-  cout<< "It's "<< player->_getPlayerName() << " turn to play, please input the coordinate"<<endl;
-  cout<<"From X : ";
-  cin>>fromX;
-  cout<<"From Y : ";
-  cin>>fromY;
-
-  while(chessBoard[fromX][fromY].p->_getPieceTurn() != player->_getPlayerType()){
-      cout<<"you cant't use this piece please choose something else"<<endl;
-      cout<< "It's "<< player->_getPlayerName() << " turn to play, please input the coordinate"<<endl;
-      cout<<"From X : ";
-      cin>>fromX;
+  while(1){
+    cout<< "It's "<< player->_getPlayerName() << " turn to play, please input the coordinate"<<endl;
+    cout<< "You have to input a number between 0 to 7" << endl;
+    cout<<"From X : ";
+    if(cin>>fromX and fromX >= 0 and fromX <= 7){
       cout<<"From Y : ";
-      cin>>fromY;
+      if(cin>>fromY and fromY >= 0 and fromY <= 7 and chessBoard[fromX][fromY].p->_getPieceTurn() == player->_getPlayerType()){
+        break;
+      }else{
+        cout<<"Invalid input, please use numerical value."<<endl;
+        cin.clear();
+        while(cin.get() != '\n');//clear the buffer
+      }
+    }else{
+      cout<<"Invalid input, please use numerical value."<<endl;
+      cin.clear();
+      while(cin.get() != '\n');// clear the buffer
+    }
   }
 
   cout<<"that is the piece you wanted : "<<chessBoard[fromX][fromY].p->_getPieceType()<< endl;
-
-  //show the valid move they can do... if no move kindly ask to move something else.
-  // legalMoves = isMoveLegal();
 
 
   v->push_back(fromX);
@@ -596,28 +597,21 @@ vector<int> Game::askPlayerPiece(Board chessBoard[SIZEROW][SIZECOL], Player* pla
   return *v;
 }
 
-// shouldn't call player, i should call turnOfPlayer no castling or en passant
+// no castling or en passant
 vector<tuple<int,int>> Game::legalMoves(Board chessBoard[SIZEROW][SIZECOL], int turnOfPlayer, vector<int>* position, vector<tuple<int,int>>* legalMoves){
 
   int x = position->at(0), y = position->at(1) ;
-  /*well here comes the good stuff*/
+
   vector<tuple<int,int>> kingOOW;
   vector<tuple<int,int>> threatPos;
 
   int mirror = 1;
-
-  //Have to take into account 1st moves for pions for all pions
-  //rook can skip over pieces
 
   computingMoves(chessBoard, x, y, turnOfPlayer, position, legalMoves, &threatPos, &kingOOW, false);
 
   for(auto it : *legalMoves){
     cout<< get<0>(it)<<" : "<< get<1>(it)<<endl;
   }
-
-
-
-
 
   return *legalMoves;
 
@@ -632,38 +626,30 @@ vector<int> Game::askPlayerMove(Board chessBoard[SIZEROW][SIZECOL],  vector<int>
 
   // To Do : make the input impossible to write anything else than ints between 0-7
 
-  cout<<"To X : ";
-  cin>>toX;
-  cout<<"To Y : ";
-  cin>>toY;
-
-  // auto t = make_tuple(toX,toY);
-  // find if t is in vector of tuples
-  // auto it = find(legalMoves.begin(), legalMoves.end(), t);
-  // got to make a for loop to make it work the iterator is not working
-  for(auto it : legalMoves){
-    if(get<0>(it) == toX and get<1>(it) == toY){
-      tupleFound = true;
-    }
-  }
-
-  // while loop to confirm that the inputs toX and toY are contained into the legalMoves
-  while(tupleFound != true){
-    cout<<"this is not a valid move please choose again : "<< endl;
+  while(1){
     cout<<"To X : ";
-    cin>>toX;
-    cout<<"To Y : ";
-    cin>>toY;
-
-    // got to make a for loop to make it work
-    for(auto it : legalMoves){
-      if(get<0>(it) == toX and get<1>(it) == toY){
-        tupleFound = true;
+    if(cin>>toX and toX >= 0 and toX <= 7){
+      cout<<"To Y : ";
+      if(cin>>toY and toY >= 0 and toY <= 7){
+        for(auto it : legalMoves){
+          if(get<0>(it) == toX and get<1>(it) == toY){
+            tupleFound = true;
+          }
+        }
+        if(tupleFound == true){
+          break;
+        }
+      }else{
+        cout<<"Invalid input, please use numerical value."<<endl;
+        cin.clear();
+        while(cin.get() != '\n');//clear the buffer
       }
+    }else{
+      cout<<"Invalid input, please use numerical value."<<endl;
+      cin.clear();
+      while(cin.get() != '\n');// clear the buffer
     }
-
   }
-
 
   cout<<"this is where you want to go : "<<chessBoard[toX][toY].p->_getPieceType()<< endl;
 
@@ -697,26 +683,15 @@ void Game::movePiece(Board chessBoard[SIZEROW][SIZECOL], vector<int>* v, Piece* 
   Piece* temp2 = chessBoard[toX][toY].p;
 
 
-  // cout<<"derp"<<endl;
-  // cout<<toX<<":"<<toY<<endl;
-  // cout<<chessBoard[toX][toY].p->_getPieceTurn()<<"!="<<player->_getPlayerType()<<endl;
-  // cout<<chessBoard[toX][toY].p->_getPieceType()<<"!="<< " - "<<endl;
-
   if(chessBoard[toX][toY].p->_getPieceTurn() != player->_getPlayerType()){
     if(chessBoard[toX][toY].p->_getPieceType() != '-'){
       player->_setPieceCaptured(temp2); // input into vec of piece captured
     }
   }
 
-
-
-
   //this is where the move is made note: i think &* is useless..
   chessBoard[toX][toY].p = &*temp;
   chessBoard[fromX][fromY].p = nonPiece;
-
-
-
 
 }
 
@@ -772,7 +747,7 @@ void Game::displayCheck(Player* player, bool moveIsChecking){
 
 bool Game::isMoveSafe(Board chessBoard[SIZEROW][SIZECOL], Player* player, Piece* nonPiece, vector<int>* position, vector<tuple<int,int>>* lm , bool moveIsSafe){
 
-  int turnOfPlayer;
+  int turnOfPlayer = player->_getPlayerType();
   int fromX = position->at(0); //row
   int fromY = position->at(1); //col
   int toX = position->at(2);
@@ -787,26 +762,33 @@ bool Game::isMoveSafe(Board chessBoard[SIZEROW][SIZECOL], Player* player, Piece*
   vector<tuple<int,int>> kingOOW;
   Piece* temp = chessBoard[fromX][fromY].p;
   Piece* temp2 = chessBoard[toX][toY].p;
-  auto kingPos = player->_getPlayerKingPos();//return a tuple of value
+
+  // update the new position of the king for the current player
+  // if the piece chosen is of type king
+  if(tolower(chessBoard[fromX][fromY].p->_getPieceType()) == 'r'){
+    player->_setPlayerKingPos(toX,toY);
+  }
 
   //we simulate the move on the Board
   //this is where the move is made
   chessBoard[toX][toY].p = &*temp;
   chessBoard[fromX][fromY].p = nonPiece;
 
+  auto kingPos = player->_getPlayerKingPos();//return a tuple of value
+
   //need to switch the turnOfPlayer else i simulate the current player which is no bueno
-  // simulation of all the ennemy pieces
-  //change the player turn before going to the loops
+  // simulation of all the ennemy pieces != turnOfPlayer
+  // change the player turn before going to the loops
   turnOfPlayer = player->_getPlayerType() == 1 ? 2 : 1;
-  mirror = turnOfPlayer == 1 ?  1 : -1;
+
 
   // cout<<"seg fault here?"<<endl;
   for(int x = 0; x < SIZEROW; x++){
     for(int y = 0; y < SIZECOL; y++){
 
       // cout<<turnOfPlayer<<" :  "<<chessBoard[x][y].p->_getPieceTurn()<<endl;
-      if(chessBoard[x][y].p->_getPieceTurn() == turnOfPlayer){
-        cout<<x<<" : "<< y<< endl;
+      if(chessBoard[x][y].p->_getPieceTurn() == turnOfPlayer and chessBoard[x][y].p->_getPieceType() != '-'){
+        // cout<<x<<" : "<< y<< endl;
 
         // we assign the position found
         positionTemp.push_back(x);
@@ -818,20 +800,17 @@ bool Game::isMoveSafe(Board chessBoard[SIZEROW][SIZECOL], Player* player, Piece*
     }
   }
 
-  // for (it : legalMoves){
-  //   cout<<get<0>(it)<<" : "<< get<1>(it)<<endl;
-  // }
-  //
-  // cout<<"your king position :"<< get<0>(kingPos)<<" : "<< get<1>(kingPos)<<endl;
-  //
-  // string test;
-  // cin >> test;
-
-
-
   //once i have all the moves for all the possible pieces
   // i can search if the tuple kingpos is inside the vector of legal legalMoves
   // if it is then i can update the current player saying that he is in check
+  // cout<<"ennemy possible moves"<<endl;
+  // for(auto it:legalMoves){
+  //   cout<<get<0>(it)<<" : "<<get<1>(it)<<endl;
+  // }
+  //
+  // cout<<"current king position"<<endl;
+  // cout<<get<0>(kingPos)<<" : "<<get<1>(kingPos)<<endl;
+
   auto found = find(legalMoves.begin(), legalMoves.end(), kingPos);
 
   if(found != legalMoves.end()){// not sure if this good
@@ -845,6 +824,7 @@ bool Game::isMoveSafe(Board chessBoard[SIZEROW][SIZECOL], Player* player, Piece*
     // system("clear");
 
   }
+
 
   //we cancel the move
   chessBoard[toX][toY].p = &*temp2;
@@ -869,23 +849,7 @@ bool Game::isMoveChecking(Board chessBoard[SIZEROW][SIZECOL], tuple<int,int> kin
   positionTemp.push_back(x);
   positionTemp.push_back(y);
 
-  //Have to take into account 1st moves for pions for all pions
-  //rook can skip over pieces
-  // cout<< positionTemp.at(0)<<":"<<positionTemp.at(1)<<endl;
-
   computingMoves(chessBoard, x, y, turnOfPlayer, &positionTemp, &legalMoves, threatPos, &kingOOW, false);
-
-
-  // cout<<"or not"<<endl;
-  //
-  // for (it : legalMoves){
-  //   cout<<get<0>(it)<<" : "<< get<1>(it)<<endl;
-  // }
-  //
-  // cout<<"ennemy king position :"<< get<0>(kingPos)<<" : "<< get<1>(kingPos)<<endl;
-  //
-  // string test;
-  // cin >> test;
 
   // search the ennemy king position in the legalmoves
   auto found = find(legalMoves.begin(), legalMoves.end(), kingPos);
@@ -912,13 +876,25 @@ void Game::pionSwitch(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Playe
     if(toX == 7 or toX == 0){
       char choice;
       Piece* pieceReturned;
-      cout<<"the pieces you can choose from : " ;
+      cout<<"the pieces you can choose from : " <<endl;
       for(auto it : player->_getPieceCaptured()){
         cout<<it->_getPieceType();
         cout<<", ";
       }
-      cout<<"which piece you want to return to the board : ";
-      cin>>choice;
+      while(1){
+        cout<<"which piece you want to return to the board : ";
+        if(cin>>choice){
+          break;
+        }else {
+          cout<<"invalid input"<<endl;
+          cin.clear();
+          while(cin.get() != '\n');// clear the buffer
+        }
+      }
+
+      if(turnOfPlayer == 2){
+        choice = toupper(choice);
+      }
       pieceReturned = player->_returnPlayerPieceCaptured(choice);
       chessBoard[toX][toY].p = pieceReturned;
     }
@@ -939,12 +915,6 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
   bool gameOver = false;
   std::vector<tuple<int,int>>::iterator found;
 
-  // string test;
-
-
-  // i evaluate the 50 checks rules then draw
-  // i evaluate check mate
-
 
   // for the check mate i'll receive a vector of
   // position that threatens the current king that is isChecked
@@ -953,14 +923,6 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
   // if there isn't i'll check the king if he can get out of the path
   // if he can't then it's checkmate (update private attribute in player)
   // return true for end of the game
-
-  // cout<<"here"<<endl;
-  // cout<<"the threat positions"<<endl;
-  // for (auto it : *threatPos){
-  //   cout<<get<0>(it)<<" : "<< get<1>(it)<<endl;
-  // }
-  //
-  // cin >> test;
 
 
   if(threatPos->size() != 0 and moveIsChecking){
@@ -986,24 +948,6 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
     //if the king position is not empty i'll compute every ennemy
     //move inside a vector of ennemylegalmoves and ill check if
     // any position for the king is not inside the vector .
-    //
-    // cout<<"checked dude legal moves"<<endl;
-    //
-    // for (auto it : legalMoves){
-    //   cout<<get<0>(it)<<" : "<< get<1>(it)<<endl;
-    // }
-    //
-    //
-    // cin >> test;
-    //
-    //
-    // cout<<"king out of the way moves"<<endl;
-    //
-    // for (auto it : kingOOW){
-    //   cout<<get<0>(it)<<" : "<< get<1>(it)<<endl;
-    // }
-    //
-    // cin >> test;
 
     //check for a piece that can block the threat
     for(auto it : legalMoves){
@@ -1058,11 +1002,8 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
     }
   }
 
-
   // cout<<"here"<<endl;
   cout<<gameOver<<endl;
-
-
 
   //for the 50 checks rules
   // i'll just check whether the player has 50 consecutiveCheck
@@ -1073,8 +1014,6 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
       gameOver = true;
     }
   }
-
-
 
   return gameOver;
 
