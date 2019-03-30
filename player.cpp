@@ -18,6 +18,7 @@ Player::Player(int type, int x, int y){
   get<0>(kingPos) = x;
   get<1>(kingPos) = y;
 
+
   playerChecked = false;
   consecutiveCheck = 0;
   pieceCaptured;
@@ -89,6 +90,8 @@ void Player::_setPlayerKingPos(int toX, int toY){
 tuple<int,int> Player::_getPlayerKingPos(){
   return kingPos;
 }
+
+
 
 void Player::_setPlayerStatus(){
   playerChecked = playerChecked == false ? true : false;

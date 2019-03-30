@@ -29,9 +29,9 @@ public:
   //rather than the copy of it
 
   void initialiseBoard(list<Piece> &, Board [SIZEROW][SIZECOL]);
-  void displayBoard(Board [SIZEROW][SIZECOL], ostream & out = cout) const;
+  void displayBoard(const Board [SIZEROW][SIZECOL], ostream & out = cout) const;
   vector<int> askPlayerPiece(Board [SIZEROW][SIZECOL], Player*, vector<int>*);
-  vector<tuple<int,int>> legalMoves(Board [SIZEROW][SIZECOL], int, vector<int>*, vector<tuple<int,int>>*);
+  vector<tuple<int,int>> legalMoves(Board [SIZEROW][SIZECOL], int, vector<int>*, vector<tuple<int,int>>*, Player*);
   vector<int> askPlayerMove(Board [SIZEROW][SIZECOL], vector<int>*, vector<tuple<int,int>>);
 
   //complicated one for sure
@@ -39,10 +39,16 @@ public:
   bool isMoveChecking(Board [SIZEROW][SIZECOL], tuple<int,int>, vector<int>*, vector<tuple<int,int>>*, int);
 
   void movePiece(Board [SIZEROW][SIZECOL], vector<int>*, Piece*, Player* );
+  void undoMove(Board [SIZEROW][SIZECOL], vector<int>*, Piece*, Piece*, Piece*, Player* );
+
   int updateTurnOfPlayer(Player*);
   void displayEatenPieces(Player*);
   void displayCheck(Player*, bool);
+  void displayPlayerInfo(Player*);
 
   void pionSwitch(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
   bool endGameEval(Board [SIZEROW][SIZECOL], bool, vector<tuple<int,int>>*, Player*, int);
+  void skynetPieceSwitch(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
+
+
 };

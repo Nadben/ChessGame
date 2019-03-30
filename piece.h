@@ -13,7 +13,7 @@ public:
   Piece(int,char,int);
   void _setPieceType(char);
   void _setPieceTurn(int);
-  void _setFirstMove();
+  void _setFirstMove(bool);
   char _getPieceType();
   int _getPieceTurn();
   bool _getFirstMove();// should change to  _getPieceFirstMove ....

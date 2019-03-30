@@ -21,8 +21,8 @@ void Piece::_setPieceTurn(int x){
   pieceTurn = x;
 }
 
-void Piece::_setFirstMove(){
-  firstMove = false;
+void Piece::_setFirstMove(bool doneFirstMove){
+  firstMove = doneFirstMove;
 }
 
 char Piece::_getPieceType(){

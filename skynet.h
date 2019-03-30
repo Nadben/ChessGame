@@ -9,14 +9,15 @@ once this is done, the alphabeta algorithm will kick in
 and to get rid of the horizon effect ill check the quiescent algorithm and voila
 
 */
+#include "game.h"
 
-#include <tuple>
 
-class Skynet : public Player{
+class Player;
+class Board;
+
+class Skynet{
+
 private:
-  // Game game; // the idea is that i could recycle some functions from the game
-
-
 
 public:
 
@@ -25,10 +26,14 @@ public:
   ~Skynet();
   // _searchMinNodes
 
-  //returns the score of that move
-  int _alphaBeta(tuple<int,int>, int, int, int, bool);
+  //returns the best move
+  vector<int> _alphaBeta(Game*, Board [SIZEROW][SIZECOL], Player, Player, Piece*, int);
+
+  //search methods for alphabeta pruning
+  int _minSearch(Game*,  Board [SIZEROW][SIZECOL], Player, Player, Piece*, int, int, int, bool, int, bool);
+  int _maxSearch(Game*,  Board [SIZEROW][SIZECOL], Player, Player,Piece*, int, int, int, bool, int, bool);
+
   //compute the score
-  int _costFun();
+  int _costFun(Game*,  Board [SIZEROW][SIZECOL], int, bool, Player*);
 
-
-}
+};
