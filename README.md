@@ -1,19 +1,16 @@
 # Chess Game
 
 general ToDo list:
-  - en passant 
-  - reinforcing the dialog
-  - checking the endGame method for checkmate, it wasn't working when it should have. 
-  - Choice Menu, for player vs player and computer vs player. 
-  - refactoring 
-  - optimisation : deleting repeating code, using better data Structures etc.
+  - En passant 
+  - Refactoring 
+  - Optimisation : deleting repeating code, using better data Structures etc.
   
- Ai toDo list:
+ A.I. toDo list:
   - Quiescence search (for the horizon problem)
-  - Table of pawns (maybe)
-  - random popular oppenings
-  - timed decisions 
-  - memoization of moves already searched.
+  - Random popular oppenings
+  - Timed decisions 
+  - Memoization of moves already searched. (Zobrist Hash tables)
+  - Pawn promotion for A.I.
 
 
  
