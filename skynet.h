@@ -4,9 +4,23 @@
 /*
 design implementation:
 
-i'll start with a function that will do popular oppening move sets randomly,
-once this is done, the alphabeta algorithm will kick in
-and to get rid of the horizon effect ill check the quiescent algorithm and voila
+Alpha Beta Pruning with memoization of best scores, 
+
+ToDo list : 
+
+          -Zobrist hashing
+            - lookup() function that will look info on current position and return
+                        its hashing code if position is found in table (before evaluation)
+            - store() function that will store the info on current position if the state
+                      wasn't found earlier in the table (after evaluation usually at the very end)
+              
+          -Quiescent search`
+            will need to use it for moves who seems rather interesting,
+            it will perform a local search around that move to see if it's really a good
+            move (need more info on how it should work)
+            if there is a capture, then we do a quiescence search for all those captures
+
+          
 
 */
 #include "game.h"
@@ -24,7 +38,7 @@ public:
 
   Skynet();
   ~Skynet();
-  // _searchMinNodes
+
 
   //returns the best move
   vector<int> _alphaBeta(Game*, Board [SIZEROW][SIZECOL], Player, Player, Piece*, int);
@@ -34,6 +48,9 @@ public:
   int _maxSearch(Game*,  Board [SIZEROW][SIZECOL], Player, Player,Piece*, int, int, int, bool, int, bool);
 
   //compute the score
-  int _costFun(Game*,  Board [SIZEROW][SIZECOL], int, bool, Player*);
+  int _costFun(Game*,  Board [SIZEROW][SIZECOL], int, bool, Player*, bool);
+
+  //quiescence search method returns the score of the quiescent moves should replace alpha beta tho 
+  int _quiescence(Game*, Board [SIZEROW][SIZECOL], int, int, int, bool, Player*, bool);
 
 };

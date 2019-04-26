@@ -4,15 +4,10 @@
 
 
 Player::Player(int type, int x, int y){
-  string name = "";
-  // make_heap(pieceCaptured.begin(),pieceCaptured.end());
-
-  cout << "input the name of player " << type <<" : " ;
-  cin >> name;
 
 
   m_type = type;
-  m_name = name;
+  m_name = "";
   m_points = 0;
 
   get<0>(kingPos) = x;
@@ -26,6 +21,25 @@ Player::Player(int type, int x, int y){
 }
 
 Player::~Player(){}
+
+
+void Player::_setName(char choice){
+
+  if(choice == 'H'){
+
+    string name = "";
+    cout << "input the name of player " << m_type <<" : " ;
+    cin >> name;
+
+    m_name = name;
+
+  }
+  else {
+    m_name = "Skynet";
+  }
+
+}
+
 
 
 //me permet d'acceder aux attributs private de mon objet player

@@ -24,8 +24,9 @@ void hardCodedMove(int posX, int posY, vector<tuple<int,int>>* legalMoves, Board
         if(tolower(chessBoard[posX][posY].p->_getPieceType()) != 'r' and *threatFound == false ){
           //it wasn't a threat we erase the path
           threat->clear();
-        }else{
+        }else if(tolower(chessBoard[posX][posY].p->_getPieceType()) == 'r' ){
           //the threat path was found
+          threat->push_back(t);
           *threatFound = true;
         }
       }
@@ -63,8 +64,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
               if(tolower(chessBoard[x-i][y+i].p->_getPieceType()) != 'r' and *threatFound == false ){
                 //it wasn't a threat we erase the path
                 threat->clear();
-              }else{
+              }else if(tolower(chessBoard[x-i][y+i].p->_getPieceType()) == 'r'  ){
                 //the threat path was found
+                threat->push_back(t);
                 *threatFound = true;
               }
               //stop the iteration
@@ -86,6 +88,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
     }
 
     if(direction == "forward left"){
+      if(*threatFound == false ){
+        threat->clear();    
+      }
       for(int i = 1 ; i <= numberOfStep  ; i++){
         if((x-i) >= 0 and (y-i) >= 0 ) {
           if(chessBoard[x-i][y-i].p->_getPieceType() == '-'){
@@ -105,8 +110,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
               if(tolower(chessBoard[x-i][y-i].p->_getPieceType()) != 'r' and *threatFound == false ){
                 //it wasn't a threat we erase the path
                 threat->clear();
-              }else{
+              }else if(tolower(chessBoard[x-i][y-i].p->_getPieceType()) == 'r'  ){
                 //the threat path was found
+                threat->push_back(t);
                 *threatFound = true;
               }
               //stop the iteration
@@ -127,6 +133,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
     }
 
     if(direction == "backward right"){
+      if(*threatFound == false ){
+        threat->clear();    
+      }   
       for(int i = 1 ; i <= numberOfStep  ; i++){
         if((x + i) <= 7 and (y + i) <= 7) {
           if(chessBoard[x+i][y+i].p->_getPieceType() == '-'){
@@ -146,8 +155,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
               if(tolower(chessBoard[x+i][y+i].p->_getPieceType()) != 'r' and *threatFound == false ){
                 //it wasn't a threat we erase the path
                 threat->clear();
-              }else{
+              }else if(tolower(chessBoard[x+i][y+i].p->_getPieceType()) == 'r' ){
                 //the threat path was found
+                threat->push_back(t);
                 *threatFound = true;
               }
               //stop the iteration
@@ -168,6 +178,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
     }
 
     if(direction == "backward left"){
+      if(*threatFound == false ){
+        threat->clear();    
+      }  
       for(int i = 1 ; i <= numberOfStep  ; i++){
         if((x + i) <= 7 and (y - i) >= 0) {
           if(chessBoard[x+i][y-i].p->_getPieceType() == '-'){
@@ -187,8 +200,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
               if(tolower(chessBoard[x+i][y-i].p->_getPieceType()) != 'r' and *threatFound == false ){
                 //it wasn't a threat we erase the path
                 threat->clear();
-              }else{
+              }else if(tolower(chessBoard[x+i][y-i].p->_getPieceType()) == 'r'  ){
                 //the threat path was found
+                threat->push_back(t);
                 *threatFound = true;
               }
               //stop the iteration
@@ -213,6 +227,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
   if(type == 't' or type == 'q'){
 
     if(direction == "forward"){
+      if(*threatFound == false ){
+        threat->clear();    
+      }  
       for(int i = 1; i <= stepX; i++){
         if(chessBoard[x-i][y].p->_getPieceType() == '-'){
           auto t = make_tuple(x-i,y);
@@ -231,8 +248,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
             if(tolower(chessBoard[x-i][y].p->_getPieceType()) != 'r' and *threatFound == false ){
               //it wasn't a threat we erase the path
               threat->clear();
-            }else{
+            }else if(tolower(chessBoard[x-i][y].p->_getPieceType()) == 'r' ){
               //the threat path was found
+              threat->push_back(t);
               *threatFound = true;
             }
             //stop the iteration
@@ -252,6 +270,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
     }
 
     if(direction == "backward"){
+      if(*threatFound == false ){
+        threat->clear();    
+      }     
       for(int i = 1; i < stepX; i++){
         if(chessBoard[x+i][y].p->_getPieceType() == '-'){
           auto t = make_tuple(x+i,y);
@@ -270,8 +291,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
             if(tolower(chessBoard[x+i][y].p->_getPieceType()) != 'r' and *threatFound == false ){
               //it wasn't a threat we erase the path
               threat->clear();
-            }else{
+            }else if(tolower(chessBoard[x+i][y].p->_getPieceType()) == 'r' and *threatFound == true ){
               //the threat path was found
+              threat->push_back(t);
               *threatFound = true;
             }
             //stop the iteration
@@ -291,6 +313,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
     }
 
     if(direction == "left"){
+      if(*threatFound == false ){
+        threat->clear();    
+      };      
       for(int i = 1; i <= stepY; i++){
         if(chessBoard[x][y-i].p->_getPieceType() == '-'){
           auto t = make_tuple(x,y-i);
@@ -309,8 +334,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
             if(tolower(chessBoard[x][y-i].p->_getPieceType()) != 'r' and *threatFound == false ){
               //it wasn't a threat we erase the path
               threat->clear();
-            }else{
+            }else if(tolower(chessBoard[x][y-i].p->_getPieceType()) == 'r' ){
               //the threat path was found
+              threat->push_back(t);
               *threatFound = true;
             }
             //stop the iteration
@@ -330,6 +356,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
     }
 
     if(direction == "right"){
+      if(*threatFound == false ){
+        threat->clear();    
+      }     
       for(int i = 1; i < stepY; i++){
         if(chessBoard[x][y+i].p->_getPieceType() == '-'){
           auto t = make_tuple(x,y+i);
@@ -348,8 +377,9 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
             if(tolower(chessBoard[x][y+i].p->_getPieceType()) != 'r' and *threatFound == false ){
               //it wasn't a threat we erase the path
               threat->clear();
-            }else{
+            }else if(tolower(chessBoard[x][y].p->_getPieceType()) == 'r' ){
               //the threat path was found
+              threat->push_back(t);
               *threatFound = true;
             }
             //stop the iteration
@@ -369,8 +399,6 @@ void hardCodedMoveTFQ(int stepX, int stepY, vector<tuple<int,int>>* legalMoves, 
     }
   }
 }
-
-
 
 void computingMoves(Board chessBoard[SIZEROW][SIZECOL],int x,int y, int turnOfPlayer,  vector<int>* position, vector<tuple<int,int>>* legalMoves,
                     vector<tuple<int,int>>* threatPos, vector<tuple<int,int>>* kingOOW, Player* player, bool endGame){
@@ -393,8 +421,8 @@ void computingMoves(Board chessBoard[SIZEROW][SIZECOL],int x,int y, int turnOfPl
         //have i consumed my first move?
         if((x + 1*mirror) >= 0 and (x + 1*mirror) <= 7 and (y) >= 0 and (y) <= 7){
           if(chessBoard[x][y].p->_getFirstMove() != false) {
-            // does the square in front is empty ? if yes make the tuple else
-            if(chessBoard[(x+1*mirror)][y].p->_getPieceType() == '-'){
+            // does the square in front is empty and 2  ? if yes make the tuple else
+            if(chessBoard[(x+1*mirror)][y].p->_getPieceType() == '-' and chessBoard[(x+2*mirror)][y].p->_getPieceType() == '-'){
               auto t = make_tuple(x+2*mirror,y);
               legalMoves->push_back(t);
             }
@@ -503,6 +531,7 @@ void computingMoves(Board chessBoard[SIZEROW][SIZECOL],int x,int y, int turnOfPl
 
     }
 }
+
 void castling(Board chessBoard[SIZEROW][SIZECOL], Player* player, vector<tuple<int,int>>* legalMoves, int turnOfPlayer){
   /*   
     The king and the chosen rook are on the player's first rank.[3]
@@ -673,8 +702,6 @@ void Game::displayBoard(const Board chessBoard[SIZEROW][SIZECOL], ostream & out)
 vector<int> Game::askPlayerPiece(Board chessBoard[SIZEROW][SIZECOL], Player* player, vector<int>* v){
 
   int fromX, fromY;
-  // To Do : make the input impossible to write anything else than ints between 0-7
-
 
   while(1){
     cout<<"please input the coordinate"<<endl;
@@ -715,14 +742,12 @@ vector<tuple<int,int>> Game::legalMoves(Board chessBoard[SIZEROW][SIZECOL], int 
   vector<tuple<int,int>> kingOOW;
   vector<tuple<int,int>> threatPos;
 
-
   int mirror = 1;
 
   computingMoves(chessBoard, x, y, turnOfPlayer, position, legalMoves, &threatPos, &kingOOW, player, false);
   
   if(chessBoard[get<0>(player->_getPlayerKingPos())][get<1>(player->_getPlayerKingPos())].p->_getFirstMove() == true 
       and player->_getPlayerStatus() == false and tolower(chessBoard[x][y].p->_getPieceType()) == 'r'){
-    // cout<<"here"<<endl;
     castling(chessBoard, player, legalMoves, turnOfPlayer);
   }
 
@@ -791,23 +816,25 @@ void Game::movePiece(Board chessBoard[SIZEROW][SIZECOL], vector<int>* v, Piece* 
 
   // update the new position of the king for the current player
   if(tolower(fromPiece->_getPieceType()) == 'r'){
-    player->_setPlayerKingPos(fromX,fromY-2);
-    if(tolower(toPiece->_getPieceType())=='t'){
+    if(tolower(toPiece->_getPieceType())=='t' and player->_getPlayerType() == toPiece->_getPieceTurn()){
       //we are doing the castling 
       if(fromY - toY > 0){
         //big castle
+        player->_setPlayerKingPos(fromX,fromY-2);
         chessBoard[fromX][fromY-2].p = &*fromPiece;
         chessBoard[fromX][fromY].p = nonPiece; 
         chessBoard[toX][toY+3].p = &*toPiece;
         chessBoard[toX][toY].p = nonPiece; 
       }else if (fromY - toY < 0){
         //small castle
+        player->_setPlayerKingPos(fromX, fromY+2);
         chessBoard[fromX][fromY+2].p = &*fromPiece;
         chessBoard[fromX][fromY].p = nonPiece; 
         chessBoard[toX][toY-2].p = &*toPiece;
         chessBoard[toX][toY].p = nonPiece; 
       }
     }else{
+      player->_setPlayerKingPos(toX, toY);
       chessBoard[toX][toY].p = &*fromPiece;
       chessBoard[fromX][fromY].p = nonPiece;
     }
@@ -841,9 +868,6 @@ void Game::undoMove(Board chessBoard[SIZEROW][SIZECOL], vector<int>* v, Piece* f
   int toY = v->at(3);
 
   // update the new position of the king for the current player
-
- 
-
   //make the first move true if false prior !
   if(tolower(fromPiece->_getPieceType()) == 'p' and fromX == 1 or fromX == 6){
     // cout<<"first Move reverted"<<endl;
@@ -870,8 +894,7 @@ void Game::undoMove(Board chessBoard[SIZEROW][SIZECOL], vector<int>* v, Piece* f
   }  
 
   if(tolower(fromPiece->_getPieceType()) == 'r'){
-    player->_setPlayerKingPos(fromX,fromY);
-    if(tolower(toPiece->_getPieceType()) == 't'){
+    if(tolower(toPiece->_getPieceType()) == 't' and player->_getPlayerType() == toPiece->_getPieceTurn()){
       //we are doing the castling 
       // cout<<"Castling"<<endl;
 
@@ -890,6 +913,7 @@ void Game::undoMove(Board chessBoard[SIZEROW][SIZECOL], vector<int>* v, Piece* f
       }
       // displayBoard(chessBoard);
     }else{
+      player->_setPlayerKingPos(fromX,fromY);
       chessBoard[toX][toY].p = &*toPiece;
       chessBoard[fromX][fromY].p = &*fromPiece;
     }
@@ -900,13 +924,7 @@ void Game::undoMove(Board chessBoard[SIZEROW][SIZECOL], vector<int>* v, Piece* f
     chessBoard[toX][toY].p = &*toPiece;
     chessBoard[fromX][fromY].p = &*fromPiece;
   }
-
-  // //undo the move
-  // chessBoard[toX][toY].p = &*toPiece;
-  // chessBoard[fromX][fromY].p = &*fromPiece;
-
 }
-
 
 int Game::updateTurnOfPlayer(Player* player){
 
@@ -954,6 +972,11 @@ void Game::displayCheck(Player* player, bool moveIsChecking){
   }
 
   cout<< "Number of consecutive check: " <<player->_getPLayerConsCheck()<<endl;
+}
+
+void Game::displayPlayerInfo(Player* player){
+  cout<<"\n";
+  cout<< "It's "<< player->_getPlayerName()<<" turn to play !"<<endl;
 }
 
 //Simulation !
@@ -1017,34 +1040,26 @@ bool Game::isMoveSafe(Board chessBoard[SIZEROW][SIZECOL], Player* player, Piece*
   //once i have all the moves for all the possible pieces
   // i can search if the tuple kingpos is inside the vector of legal legalMoves
   // if it is then i can update the current player saying that he is in check
-  // cout<<"ennemy possible moves"<<endl;
-  // for(auto it:legalMoves){
-  //   cout<<get<0>(it)<<" : "<<get<1>(it)<<endl;
-  // }
-  //
-  // cout<<"current king position"<<endl;
-  // cout<<get<0>(kingPos)<<" : "<<get<1>(kingPos)<<endl;
-
   auto found = find(legalMoves.begin(), legalMoves.end(), kingPos);
 
   if(found != legalMoves.end()){// not sure if this good
     // we set the status
     moveIsSafe = false;
-    // cout<< "The move isn't safe because your king will be checked."<< endl;
-    // cout<< "Please choose another move."<<endl;
-    // we clear the vectors of position and legalMoves
     position->clear();
     lm->clear();
-    // system("clear");
+
 
   }
 
 
-  //we cancel the move
+  //we cancel the movetoY
+
   chessBoard[toX][toY].p = &*temp2;
   chessBoard[fromX][fromY].p = &*temp;
 
-
+  if(tolower(chessBoard[fromX][fromY].p->_getPieceType()) == 'r'){
+    player->_setPlayerKingPos(fromX,fromY);
+  }
 
   return moveIsSafe;
 }
@@ -1065,6 +1080,10 @@ bool Game::isMoveChecking(Board chessBoard[SIZEROW][SIZECOL], tuple<int,int> kin
 
   computingMoves(chessBoard, x, y, turnOfPlayer, &positionTemp, &legalMoves, threatPos, &kingOOW, player, false);
 
+  // for(auto it : *threatPos){
+  //   cout<<get<0>(it)<<" : "<<get<1>(it)<<endl;
+  // }
+  
   // search the ennemy king position in the legalmoves
   auto found = find(legalMoves.begin(), legalMoves.end(), kingPos);
 
@@ -1115,7 +1134,7 @@ void Game::pionSwitch(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Playe
   }
 }
 
-void Game::skynetPieceSwitch(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Player* player2, int turnOfPlayer, vector<int>* position){
+void Game::skynetPiecePromotion(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Player* player2, int turnOfPlayer, vector<int>* position){
   int toX = position->at(2);
   int toY = position->at(3);
   int index;
@@ -1147,8 +1166,7 @@ void Game::skynetPieceSwitch(Board chessBoard[SIZEROW][SIZECOL], Player* player1
   }
 }
 
-
-bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, vector<tuple<int,int>>* threatPos, Player* player, int turnOfPlayer){
+bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, vector<tuple<int,int>>* threatPos, Player* player, Piece* nonPiece, int turnOfPlayer){
 
 
   // we check if the move is safe first.
@@ -1158,26 +1176,18 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
   vector<tuple<int,int>> legalMoves;
   vector<tuple<int,int>> ennemyLegalMoves;
   vector<tuple<int,int>> kingOOW;
+  std::vector<tuple<int,int>>::iterator found;
+  int fromX;
+  int fromY;
   int mirror = 1;
   bool gameOver = false;
-  std::vector<tuple<int,int>>::iterator found;
-
-
-  // for the check mate i'll receive a vector of
-  // position that threatens the current king that is isChecked
-  // i'll then check for each piece of the current player if there
-  // is a position that blocks that path
-  // if there isn't i'll check the king if he can get out of the path
-  // if he can't then it's checkmate (update private attribute in player)
-  // return true for end of the game
+  bool moveIsSafe = true;
 
 
   if(threatPos->size() != 0 and moveIsChecking){
     for(int x = 0; x < SIZEROW; x++){
       for(int y = 0; y < SIZECOL; y++){
-        // cout<<turnOfPlayer<<" :  "<<chessBoard[x][y].p->_getPieceTurn()<<endl;
         if(chessBoard[x][y].p->_getPieceTurn() == turnOfPlayer){
-          // cout<<x<<" : "<< y<< endl;
 
           // we assign the position found
           positionTemp.push_back(x);
@@ -1188,14 +1198,6 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
         positionTemp.clear();
       }
     }
-    // cout<<"here"<<endl;
-
-    //so i get a vector of legal moves and a vector if my king can get out of the way.
-    //if the test to block the move is not good
-    //if the king position is not empty i'll compute every ennemy
-    //move inside a vector of ennemylegalmoves and ill check if
-    // any position for the king is not inside the vector .
-
     //check for a piece that can block the threat
     for(auto it : legalMoves){
       found = find(threatPos->begin(), threatPos->end(), it);
@@ -1203,54 +1205,35 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
         break;
       }
     }
+
+    //if no piece can block the path, check for the kings possible moves
     if(found == threatPos->end()){
       if(kingOOW.size() == 0){
         gameOver = true;
       }
       else{
-        //compute every position possible for the ennemy
-        //we change the turnOfPlayer
-        turnOfPlayer = turnOfPlayer == 1 ? 2 : 1;
-        for(int x = 0; x < SIZEROW; x++){
-          for(int y = 0; y < SIZECOL; y++){
-            // cout<<turnOfPlayer<<" :  "<<chessBoard[x][y].p->_getPieceTurn()<<endl;
-            if(chessBoard[x][y].p->_getPieceTurn() == turnOfPlayer and chessBoard[x][y].p->_getPieceType() != '-'){
-              // cout<<x<<" : "<< y<< endl;
+        //make that move and recompute if the move results in a check then the move is not ok
+        //else if one move results in no check, then we good baby
+        for (auto it: kingOOW){
 
-              // we assign the position found
-              positionTemp.push_back(x);
-              positionTemp.push_back(y);
-              computingMoves(chessBoard, x, y, turnOfPlayer, &positionTemp, &ennemyLegalMoves, &threat, &kingOOW, player, false);
-
-            }
-            positionTemp.clear();
+          positionTemp.push_back(get<0>(player->_getPlayerKingPos()));
+          positionTemp.push_back(get<1>(player->_getPlayerKingPos()));
+          positionTemp.push_back(get<0>(it));
+          positionTemp.push_back(get<1>(it));
+          
+          moveIsSafe = isMoveSafe(chessBoard, player, nonPiece, &positionTemp, &legalMoves, true);
+          
+          if(moveIsSafe == true){
+            break;
           }
         }
-        //we undo the change
-        turnOfPlayer = turnOfPlayer == 1 ? 2 : 1;
-
       }
-      // check if kingoow is not inside ennemyLegalMoves
-      // cout<<"out of here"<<endl;
-      for(auto it : kingOOW){
-        found = find(ennemyLegalMoves.begin(), ennemyLegalMoves.end(), it);
-        continue;//continue until a move is not inside or if all the moves are iterated over..
-      }
-      // if all the moves are found inside, then it's gameOver else it isn't
-      if(found != ennemyLegalMoves.end()){
+      // if all the king moves are not safe, then it's gameover
+      if(moveIsSafe == false){
         gameOver = true;
       }
-      else{
-        gameOver = false;
-      }
-    }
-    else{
-      gameOver = false;
     }
   }
-
-  // cout<<"here"<<endl;
-  // cout<<gameOver<<endl;
 
   //for the 50 checks rules
   // i'll just check whether the player has 50 consecutiveCheck
@@ -1265,7 +1248,4 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
   return gameOver;
 
 }
-void Game::displayPlayerInfo(Player* player){
-  cout<<"\n";
-  cout<< "It's "<< player->_getPlayerName()<<" turn to play !"<<endl;
-}
+

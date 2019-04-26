@@ -18,7 +18,7 @@
 // #include "skynet.h"
 
 
-class Game{
+class Game {
 private:
 public:
 
@@ -35,7 +35,7 @@ public:
   vector<int> askPlayerMove(Board [SIZEROW][SIZECOL], vector<int>*, vector<tuple<int,int>>);
 
   //complicated one for sure
-  bool isMoveSafe(Board [SIZEROW][SIZECOL], Player*, Piece*, vector<int>*,vector<tuple<int,int>>*, bool);
+  bool isMoveSafe(Board [SIZEROW][SIZECOL], Player*, Piece*, vector<int>*, vector<tuple<int,int>>*, bool);
   bool isMoveChecking(Board [SIZEROW][SIZECOL], tuple<int,int>, vector<int>*, vector<tuple<int,int>>*, int);
 
   void movePiece(Board [SIZEROW][SIZECOL], vector<int>*, Piece*, Player* );
@@ -47,8 +47,9 @@ public:
   void displayPlayerInfo(Player*);
 
   void pionSwitch(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
-  bool endGameEval(Board [SIZEROW][SIZECOL], bool, vector<tuple<int,int>>*, Player*, int);
-  void skynetPieceSwitch(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
+  bool endGameEval(Board [SIZEROW][SIZECOL], bool, vector<tuple<int,int>>*, Player*, Piece*, int);
+  void skynetPiecePromotion(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
 
+  // void ennemyLegalMoves(Board [SIZEROW][SIZECOL], int, vector<tuple<int,int>>*, Player*);
 
 };

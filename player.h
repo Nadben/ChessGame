@@ -26,7 +26,7 @@ private:
   int m_points;
   int consecutiveCheck;
   tuple<int, int> kingPos;
-  tuple<int, int> rookPos;
+  // tuple<int, int> rookPos;
 
 
 
@@ -34,16 +34,20 @@ public:
   Player(int,int,int);
   ~Player();
   // vector<Piece*> pieceCaptured;
+
+  void _setName(char);
   string _getPlayerName() const;
-  int _getPlayerType() const; //either human or AI
+  //either black or white
+  int _getPlayerType() const; 
+
   vector<Piece*> _getPieceCaptured() const;
   void _setPieceCaptured(Piece*);
+
   int _getPlayerPoints();
   Piece* _returnPlayerPieceCaptured(char);
 
   tuple<int,int> _getPlayerKingPos();
   void _setPlayerKingPos(int,int);
-
 
   //player is playerChecked
   void _setPlayerStatus();

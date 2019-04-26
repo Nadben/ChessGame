@@ -2,7 +2,7 @@
 
 
 #include "skynet.h"
-
+// int i=0;
 
 using namespace std;
 
@@ -45,6 +45,7 @@ vector<int> Skynet::_alphaBeta(Game* game, Board chessBoard[SIZEROW][SIZECOL], P
 
   Player* player = turnOfPlayer == 1 ? &player1 : &player2 ;
 
+  // cout<<"fuckoff1"<<endl;
   // for every position calculate the legal moves of the max player
   for(int x = 0; x < SIZECOL; ++x){ // from x
     for(int y = 0; y < SIZEROW; ++y){// from y
@@ -80,7 +81,10 @@ vector<int> Skynet::_alphaBeta(Game* game, Board chessBoard[SIZEROW][SIZECOL], P
               moveIsChecking = game->isMoveChecking(chessBoard, kingPos, &position, &threatPos, turnOfPlayer);
 
               if(moveIsChecking){
-                gameOver = game->endGameEval(chessBoard, moveIsChecking, &threatPos, player, 2);
+                player = turnOfPlayer == 1 ? &player2 : &player1 ;
+                gameOver = game->endGameEval(chessBoard, moveIsChecking, &threatPos, player, nonPiece, 2);
+                player = turnOfPlayer == 1 ? &player1 : &player2 ;
+
               }
 
               //else i call the min search for that position
@@ -144,12 +148,14 @@ int Skynet::_minSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL],Player pla
   bool moveIsChecking = false;
   tuple<int, int> kingPos;
 
+
   Player* player = turnOfPlayer == 1 ? &player1 : &player2 ;
+  // cout<<"fuckoff2"<<endl;
 
 
   // if we hit the 0 depth or if we hit an end of game (mate or check mate) then we return the score
   if(depth == 0 or gameOver == true){
-    return _costFun(game, chessBoard, turnOfPlayer, maximising, player);
+    return _costFun(game, chessBoard, turnOfPlayer, maximising, player, gameOver);
   }
 
   if(!maximising){
@@ -162,6 +168,7 @@ int Skynet::_minSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL],Player pla
         legalMoves.clear();
         position.push_back(x);
         position.push_back(y);
+        // cout<<"fuckoff2"<<endl;
 
         //we have to get only the position where there is the current playe pieces
         if(chessBoard[x][y].p->_getPieceTurn() == turnOfPlayer){
@@ -177,25 +184,38 @@ int Skynet::_minSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL],Player pla
               Piece* fromPiece = chessBoard[x][y].p;
               Piece* toPiece = chessBoard[toX][toY].p;
 
+              // cout<<"the"<<endl;
 
               //check if the move is safe
               moveIsSafe = game->isMoveSafe(chessBoard, player, nonPiece, &position, &legalMoves, true);
 
               //if move is safe then do the move
               if(moveIsSafe){
+                // cout<<"fuck"<<endl;
               
                 game->movePiece(chessBoard, &position, nonPiece, player);
+                // cout<<"is"<<endl;
 
                 turnOfPlayer == 1 ? kingPos = player2._getPlayerKingPos() : kingPos = player1._getPlayerKingPos();
                 moveIsChecking = game->isMoveChecking(chessBoard, kingPos, &position, &threatPos, turnOfPlayer);
 
                 // turnOfPlayer = game->updateTurnOfPlayer(player);
                 if(moveIsChecking){
-                  gameOver = game->endGameEval(chessBoard, moveIsChecking, &threatPos, player, 1);
+                  // i+=1;
+                  // cout<<i<<endl;
+                  // cout<<"this"<<endl;
+                  // turnOfPlayer = game->updateTurnOfPlayer(player);
+                  player = turnOfPlayer == 1 ? &player2 : &player1 ;
+                  gameOver = game->endGameEval(chessBoard, moveIsChecking, &threatPos, player, nonPiece, 1);
+                  player = turnOfPlayer == 1 ? &player1 : &player2 ;
+
                 }
                 // if the move is a game over i compute the score for the move immediately
                 //else i call the max search for that position
+                // cout<<"shit"<<endl;
+
                 maxValue = min(maxValue, _maxSearch(game, chessBoard, player1, player2, nonPiece, depth-1, alpha, beta, true, 1, gameOver));
+                // cout<<"?????"<<endl;
 
                 //undo the move
                 game->undoMove(chessBoard, &position, fromPiece, toPiece, nonPiece, player);
@@ -239,15 +259,19 @@ int Skynet::_maxSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL], Player pl
 
   Player* player = turnOfPlayer == 1 ? &player1 : &player2 ;
 
+  // cout<<"fuckoff3"<<endl;
 
 
   // if we hit the 0 depth or if we hit an end of game (mate or check mate) then we return the score
   if(depth == 0 or gameOver == true){
-    return _costFun(game, chessBoard, turnOfPlayer, maximising, player);
+    // cout<<"the"<<endl;
+
+    return _costFun(game, chessBoard, turnOfPlayer, maximising, player, gameOver);
   }
 
   if(maximising){
     int maxValue = -999999;
+    // cout<<"the"<<endl;
 
 
     for(int x = 0; x < SIZECOL; ++x){ // from x
@@ -256,12 +280,15 @@ int Skynet::_maxSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL], Player pl
         legalMoves.clear();
         position.push_back(x);
         position.push_back(y);
+              // cout<<"fuckfuck"<<endl;
 
         //we have to get only the position where there is the current playe pieces
         if(chessBoard[x][y].p->_getPieceTurn() == turnOfPlayer){
           // compute the legalmoves
           legalMoves = game->legalMoves(chessBoard, turnOfPlayer, &position, &legalMoves, player);
           //if legal moves is not empty then for each legalMoves make the move;
+              // cout<<"chiasse"<<endl;
+
           if(legalMoves.size() != 0){
             for(auto it : legalMoves){
               int toX = get<0>(it);
@@ -276,19 +303,26 @@ int Skynet::_maxSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL], Player pl
 
               //if move is safe then do the move
               if(moveIsSafe){
+                // cout<<"fuck"<<endl;
 
                 game->movePiece(chessBoard, &position, nonPiece, player);
 
                 // custom pion switch for this player
                 turnOfPlayer == 1 ? kingPos = player2._getPlayerKingPos() : kingPos = player1._getPlayerKingPos();
                 moveIsChecking = game->isMoveChecking(chessBoard, kingPos, &position, &threatPos, turnOfPlayer);
+                // cout<<"is"<<endl;
 
                 // turnOfPlayer = game->updateTurnOfPlayer(player);
                 if(moveIsChecking){
-                  gameOver = game->endGameEval(chessBoard, moveIsChecking, &threatPos, player, 2);
+                  player = turnOfPlayer == 1 ? &player2 : &player1 ;
+                  gameOver = game->endGameEval(chessBoard, moveIsChecking, &threatPos, player, nonPiece, 2);
+                  player = turnOfPlayer == 1 ? &player1 : &player2 ;
+                  // cout<<"this"<<endl;
+
                 }
                 // if the move is a game over i compute the score for the move immediately
 
+                // cout<<"shit"<<endl;
 
                 //else i call the max search for that position
                 maxValue = max(maxValue, _minSearch(game, chessBoard, player1, player2, nonPiece, depth-1, alpha, beta, false, 2, gameOver));
@@ -320,7 +354,7 @@ int Skynet::_maxSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL], Player pl
 }
 
 
-int Skynet::_costFun(Game* game, Board chessBoard[SIZEROW][SIZECOL], int turnOfPlayer, bool maximising, Player* player){
+int Skynet::_costFun(Game* game, Board chessBoard[SIZEROW][SIZECOL], int turnOfPlayer, bool maximising, Player* player, bool gameOver){
   //calculate the mobility and material score
 
   int whiteMobility = 0;
@@ -328,6 +362,13 @@ int Skynet::_costFun(Game* game, Board chessBoard[SIZEROW][SIZECOL], int turnOfP
   int whiteMaterial = 0;
   int blackMaterial = 0;
   int score = 0;
+  int bonus = 0;
+  int white = 1; //shoudl define 
+  int black = 2;
+  // game->displayBoard(chessBoard);
+  // cout<<"hein"<<endl;
+  // cout<<gameOver<<endl;
+
 
   vector<tuple<int,int>> legalMoves;
   vector<int> position;
@@ -338,22 +379,48 @@ int Skynet::_costFun(Game* game, Board chessBoard[SIZEROW][SIZECOL], int turnOfP
       legalMoves.clear();
       position.push_back(x);
       position.push_back(y);
-      if(chessBoard[x][y].p->_getPieceTurn() == turnOfPlayer and chessBoard[x][y].p->_getPieceType() != '-'){
+      // cout<<"hein2"<<endl;
+      if(chessBoard[x][y].p->_getPieceTurn() == white and chessBoard[x][y].p->_getPieceType() != '-'){
         whiteMaterial += 1*chessBoard[x][y].p->_getPiecePoints();
-        legalMoves = game->legalMoves(chessBoard, turnOfPlayer, &position, &legalMoves, player);
+        // cout<<"hein33"<<endl;
+
+        legalMoves = game->legalMoves(chessBoard, 1, &position, &legalMoves, player);
+        // cout<<"hein3"<<endl;
+
         whiteMobility += legalMoves.size();
       }
-      if(chessBoard[x][y].p->_getPieceTurn() != turnOfPlayer and chessBoard[x][y].p->_getPieceType() != '-'){
+      if(chessBoard[x][y].p->_getPieceTurn() == black and chessBoard[x][y].p->_getPieceType() != '-'){
+        // cout<<turnOfPlayer<<endl;
+        // cout<<x<<":"<<y<<endl;
+        
         blackMaterial += 1*chessBoard[x][y].p->_getPiecePoints();
-        legalMoves = game->legalMoves(chessBoard, turnOfPlayer, &position, &legalMoves, player);
+        // cout<<"hein44"<<endl;
+        legalMoves = game->legalMoves(chessBoard, 2, &position, &legalMoves, player);
+        // cout<<"hein4"<<endl;
+
         blackMobility += legalMoves.size();
       }
     }
   }
 
-  score = (whiteMaterial-blackMaterial) + (whiteMobility-blackMobility);
+  if(gameOver){
+    bonus = 10;
+  }
+
+  score = (whiteMaterial-blackMaterial) + (whiteMobility-blackMobility) + bonus;
+  // cout<<"what happenned"<<endl;
 
   return score;
 
 
 }
+
+
+
+
+
+
+int Skynet::_quiescence(Game* game, Board chessBoard[SIZEROW][SIZECOL],int alpha, int beta, int turnOfPlayer, bool maximising, Player* player, bool gameOver){
+
+}
+
