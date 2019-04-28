@@ -814,6 +814,10 @@ void Game::movePiece(Board chessBoard[SIZEROW][SIZECOL], vector<int>* v, Piece* 
   Piece* toPiece = chessBoard[toX][toY].p;
 
 
+  if(fromPiece->_getPiecePromotion() == true){
+    fromPiece->_incPiecePromotionMoves();
+  }
+
   // update the new position of the king for the current player
   if(tolower(fromPiece->_getPieceType()) == 'r'){
     if(tolower(toPiece->_getPieceType())=='t' and player->_getPlayerType() == toPiece->_getPieceTurn()){
@@ -866,6 +870,11 @@ void Game::undoMove(Board chessBoard[SIZEROW][SIZECOL], vector<int>* v, Piece* f
   int fromY = v->at(1); //col
   int toX = v->at(2);
   int toY = v->at(3);
+
+  //decrement moves for the promotted piece
+  if(fromPiece->_getPiecePromotion() == true){
+    fromPiece->_decPiecePromotionMoves();
+  }
 
   // update the new position of the king for the current player
   //make the first move true if false prior !
@@ -1100,6 +1109,7 @@ bool Game::isMoveChecking(Board chessBoard[SIZEROW][SIZECOL], tuple<int,int> kin
 
 void Game::pionSwitch(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Player* player2, int turnOfPlayer, vector<int>* position ){
 
+  //we need to check eventually if the piece captured from the ennemy is not empty
   int toX = position->at(2);
   int toY = position->at(3);
   // we get other player's piece
@@ -1127,38 +1137,6 @@ void Game::pionSwitch(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Playe
 
       if(turnOfPlayer == 2){
         choice = toupper(choice);
-      }
-      pieceReturned = player->_returnPlayerPieceCaptured(choice);
-      chessBoard[toX][toY].p = pieceReturned;
-    }
-  }
-}
-
-void Game::skynetPiecePromotion(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Player* player2, int turnOfPlayer, vector<int>* position){
-  int toX = position->at(2);
-  int toY = position->at(3);
-  int index;
-  char choice;
-  // we get other player's piece
-  Player* player = turnOfPlayer == 1 ? player2 : player1;
-
-  if(tolower(chessBoard[toX][toY].p->_getPieceType()) == 'p'){
-    if(toX == 7 or toX == 0){
-      int value;
-      Piece* pieceReturned;
-      value = player->_getPieceCaptured()[0]->_getPiecePoints();
-      for(auto i=0 ; i < player->_getPieceCaptured().size(); i++){
-        if(value < player->_getPieceCaptured()[i]->_getPiecePoints()){
-          value = player->_getPieceCaptured()[i]->_getPiecePoints();
-          // at index
-          index = i;
-        }
-      }
-
-      if(turnOfPlayer == 2){
-        choice = toupper(player->_getPieceCaptured()[index]->_getPieceType());
-      }else{
-        choice = player->_getPieceCaptured()[index]->_getPieceType();
       }
       pieceReturned = player->_returnPlayerPieceCaptured(choice);
       chessBoard[toX][toY].p = pieceReturned;
@@ -1249,3 +1227,94 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
 
 }
 
+
+bool Game::PiecePromotion(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Player* player2, int turnOfPlayer, vector<int>* position){
+  
+  /*  
+      Once a piece is promoted we update the pawn status and
+      we will simply switch out the pawn with the best pawn 
+      possible in the vector of pawns of the current player
+      (this way it will be easier to get the pawn back when
+      we undo the piece promotion)
+  */ 
+
+  int toX = position->at(2);
+  int toY = position->at(3);
+  int index;
+  int value;
+
+  bool promotion = false;
+
+  char choice;
+  // we get other player's piece
+  Player* player = turnOfPlayer == 1 ? player2 : player1;
+
+  if(tolower(chessBoard[toX][toY].p->_getPieceType()) == 'p'){
+    if(toX == 7 or toX == 0){
+      if(chessBoard[toX][toY].p->_getPiecePromotion() == false){
+
+        chessBoard[toX][toY].p->_setPiecePromotion(true);
+        promotion = true;
+        Piece* pieceReturned;
+
+        value = player->_getPieceCaptured()[0]->_getPiecePoints();
+
+        for(auto i=0 ; i < player->_getPieceCaptured().size(); i++){
+          if(value < player->_getPieceCaptured()[i]->_getPiecePoints()){
+            value = player->_getPieceCaptured()[i]->_getPiecePoints();
+            // at index
+            index = i;
+          }
+        }
+
+        if(turnOfPlayer == 2){
+          choice = toupper(player->_getPieceCaptured()[index]->_getPieceType());
+        }
+        else{
+          choice = player->_getPieceCaptured()[index]->_getPieceType();
+        }
+
+        //i'll need to test it and debug but it should work
+        pieceReturned = player->_returnPlayerPieceCaptured(choice);
+        //pushback inside ennemy player current piece on the board
+        player->_setPieceCaptured(chessBoard[toX][toY].p);
+        //switch current player piece with the one currently captured. 
+        chessBoard[toX][toY].p = pieceReturned;
+      }
+    }
+  }
+  return promotion;
+}
+
+
+
+
+void Game::UndoPiecePromotion(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Player* player2, int turnOfPlayer, vector<int>* position){
+
+  /*Could be tricky but we could just check if i have a -1 in my undo promotion and then i'll just 
+    switch out the last piece with the current piece on the board*/
+  int fromX = position->at(0);
+  int fromY = position->at(1);
+  char choice;
+
+  Piece* pieceReturned;
+  Player* player = turnOfPlayer == 1 ? player2 : player1;
+
+  if(chessBoard[fromX][fromY].p->_getPiecePromMoves() == -1){
+    if(turnOfPlayer == 2){
+      pieceReturned = player->_returnPlayerPieceCaptured('P');
+    }
+    else{
+      pieceReturned = player->_returnPlayerPieceCaptured('p');
+    }
+
+    //pushback inside ennemy player current piece on the board
+    player->_setPieceCaptured(chessBoard[fromX][fromY].p);
+    //switch current player piece with the one currently captured. 
+    chessBoard[fromX][fromY].p = pieceReturned;
+
+    //undo the piece promotion
+    chessBoard[fromX][fromY].p->_setPiecePromotion(false);
+
+  }
+}

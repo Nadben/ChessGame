@@ -33,7 +33,7 @@ vector<int> Skynet::_alphaBeta(Game* game, Board chessBoard[SIZEROW][SIZECOL], P
   bool moveIsSafe = true;
   bool moveIsChecking = false;
   bool gameOver = false;
-  
+  bool wasNotPromoted = false;
 
   int alpha = -999999;
   int beta = 999999 ;
@@ -75,7 +75,7 @@ vector<int> Skynet::_alphaBeta(Game* game, Board chessBoard[SIZEROW][SIZECOL], P
             if(moveIsSafe){
 
               game->movePiece(chessBoard, &position, nonPiece, player);
-
+              wasNotPromoted = game->PiecePromotion(chessBoard, &player1, &player2, turnOfPlayer, &position);
 
               turnOfPlayer == 1 ? kingPos = player2._getPlayerKingPos() : kingPos = player1._getPlayerKingPos();
               moveIsChecking = game->isMoveChecking(chessBoard, kingPos, &position, &threatPos, turnOfPlayer);
@@ -111,6 +111,9 @@ vector<int> Skynet::_alphaBeta(Game* game, Board chessBoard[SIZEROW][SIZECOL], P
 
                 
               game->undoMove(chessBoard, &position, fromPiece, toPiece, nonPiece, player);
+              if(wasNotPromoted){
+                game->UndoPiecePromotion(chessBoard, &player1, &player2, turnOfPlayer, &position);
+              }
 
               position.pop_back();
               position.pop_back();
@@ -146,6 +149,7 @@ int Skynet::_minSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL],Player pla
   vector<tuple<int,int>> legalMoves;
   bool moveIsSafe = true;
   bool moveIsChecking = false;
+  bool wasNotPromoted = false;
   tuple<int, int> kingPos;
 
 
@@ -194,6 +198,8 @@ int Skynet::_minSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL],Player pla
                 // cout<<"fuck"<<endl;
               
                 game->movePiece(chessBoard, &position, nonPiece, player);
+                wasNotPromoted = game->PiecePromotion(chessBoard, &player1, &player2, turnOfPlayer, &position);
+
                 // cout<<"is"<<endl;
 
                 turnOfPlayer == 1 ? kingPos = player2._getPlayerKingPos() : kingPos = player1._getPlayerKingPos();
@@ -217,8 +223,11 @@ int Skynet::_minSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL],Player pla
                 maxValue = min(maxValue, _maxSearch(game, chessBoard, player1, player2, nonPiece, depth-1, alpha, beta, true, 1, gameOver));
                 // cout<<"?????"<<endl;
 
-                //undo the move
+                //undo the move and undo the piece promotion
                 game->undoMove(chessBoard, &position, fromPiece, toPiece, nonPiece, player);
+                if(wasNotPromoted){
+                  game->UndoPiecePromotion(chessBoard, &player1, &player2, turnOfPlayer, &position);
+                }
 
                 if(alpha >= maxValue){
                   return maxValue;
@@ -255,6 +264,7 @@ int Skynet::_maxSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL], Player pl
   vector<tuple<int,int>> legalMoves;
   bool moveIsSafe = true;
   bool moveIsChecking = false;
+  bool wasNotPromoted = false;
   tuple<int, int> kingPos;
 
   Player* player = turnOfPlayer == 1 ? &player1 : &player2 ;
@@ -265,7 +275,6 @@ int Skynet::_maxSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL], Player pl
   // if we hit the 0 depth or if we hit an end of game (mate or check mate) then we return the score
   if(depth == 0 or gameOver == true){
     // cout<<"the"<<endl;
-
     return _costFun(game, chessBoard, turnOfPlayer, maximising, player, gameOver);
   }
 
@@ -306,6 +315,8 @@ int Skynet::_maxSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL], Player pl
                 // cout<<"fuck"<<endl;
 
                 game->movePiece(chessBoard, &position, nonPiece, player);
+                wasNotPromoted = game->PiecePromotion(chessBoard, &player1, &player2, turnOfPlayer, &position);
+
 
                 // custom pion switch for this player
                 turnOfPlayer == 1 ? kingPos = player2._getPlayerKingPos() : kingPos = player1._getPlayerKingPos();
@@ -329,6 +340,10 @@ int Skynet::_maxSearch(Game* game, Board chessBoard[SIZEROW][SIZECOL], Player pl
                 //undo the move
 
                 game->undoMove(chessBoard, &position, fromPiece, toPiece, nonPiece, player);
+                if(wasNotPromoted){
+                  game->UndoPiecePromotion(chessBoard, &player1, &player2, turnOfPlayer, &position);
+                }
+
                 // game->displayBoard(chessBoard);
 
                 if( maxValue >= beta){

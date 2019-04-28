@@ -89,12 +89,9 @@ Piece* Player::_returnPlayerPieceCaptured(char p){
 
 }
 
-
 int Player::_getPlayerPoints(){
   return m_points;
 }
-
-
 
 void Player::_setPlayerKingPos(int toX, int toY){
   get<0>(kingPos) = toX;
@@ -104,8 +101,6 @@ void Player::_setPlayerKingPos(int toX, int toY){
 tuple<int,int> Player::_getPlayerKingPos(){
   return kingPos;
 }
-
-
 
 void Player::_setPlayerStatus(){
   playerChecked = playerChecked == false ? true : false;

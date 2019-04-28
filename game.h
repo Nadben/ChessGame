@@ -48,7 +48,9 @@ public:
 
   void pionSwitch(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
   bool endGameEval(Board [SIZEROW][SIZECOL], bool, vector<tuple<int,int>>*, Player*, Piece*, int);
-  void skynetPiecePromotion(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
+
+  bool PiecePromotion(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
+  void UndoPiecePromotion(Board [SIZEROW][SIZECOL], Player*, Player*, int, vector<int>*);
 
   // void ennemyLegalMoves(Board [SIZEROW][SIZECOL], int, vector<tuple<int,int>>*, Player*);
 
