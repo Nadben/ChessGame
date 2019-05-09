@@ -733,7 +733,7 @@ vector<int> Game::askPlayerPiece(Board chessBoard[SIZEROW][SIZECOL], Player* pla
   return *v;
 }
 
-// no castling or en passant
+// no en passant castling not working properly once returning from recursion
 vector<tuple<int,int>> Game::legalMoves(Board chessBoard[SIZEROW][SIZECOL], int turnOfPlayer, vector<int>* position,
                                         vector<tuple<int,int>>* legalMoves, Player* player){
 
@@ -1081,10 +1081,11 @@ bool Game::isMoveChecking(Board chessBoard[SIZEROW][SIZECOL], tuple<int,int> kin
 
   vector<tuple<int,int>> legalMoves;
   vector<int> positionTemp;
-  // vector<tuple<int,int>> threatPos;
   vector<tuple<int,int>> kingOOW;
+
   positionTemp.push_back(x);
   positionTemp.push_back(y);
+  
   Player* player;
 
   computingMoves(chessBoard, x, y, turnOfPlayer, &positionTemp, &legalMoves, threatPos, &kingOOW, player, false);
@@ -1099,6 +1100,9 @@ bool Game::isMoveChecking(Board chessBoard[SIZEROW][SIZECOL], tuple<int,int> kin
   // we found the king !
   if(found != legalMoves.end()){
     isChecked = true;
+    //include the current position of the threat in the threatPos
+    threatPos->push_back(make_tuple(x,y));
+
   }
 
 
@@ -1144,6 +1148,8 @@ void Game::pionSwitch(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Playe
   }
 }
 
+
+//there is still a problem here
 bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, vector<tuple<int,int>>* threatPos, Player* player, Piece* nonPiece, int turnOfPlayer){
 
 
@@ -1157,7 +1163,7 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
   std::vector<tuple<int,int>>::iterator found;
   int fromX;
   int fromY;
-  int mirror = 1;
+  // int mirror = 1; //useless
   bool gameOver = false;
   bool moveIsSafe = true;
 
@@ -1176,7 +1182,7 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
         positionTemp.clear();
       }
     }
-    //check for a piece that can block the threat
+    //check for a piece that can block the threat or kill the threat
     for(auto it : legalMoves){
       found = find(threatPos->begin(), threatPos->end(), it);
       if(found != threatPos->end()){
@@ -1184,7 +1190,7 @@ bool Game::endGameEval(Board chessBoard[SIZEROW][SIZECOL], bool moveIsChecking, 
       }
     }
 
-    //if no piece can block the path, check for the kings possible moves
+    //if no piece can block the path or capture the threat , check for the kings possible moves
     if(found == threatPos->end()){
       if(kingOOW.size() == 0){
         gameOver = true;
@@ -1252,41 +1258,42 @@ bool Game::PiecePromotion(Board chessBoard[SIZEROW][SIZECOL], Player* player1, P
   if(tolower(chessBoard[toX][toY].p->_getPieceType()) == 'p'){
     if(toX == 7 or toX == 0){
       if(chessBoard[toX][toY].p->_getPiecePromotion() == false){
+        if(player->_getPieceCaptured().size() != 0){
+          chessBoard[toX][toY].p->_setPiecePromotion(true);
+          promotion = true;
+          Piece* pieceReturned;
 
-        chessBoard[toX][toY].p->_setPiecePromotion(true);
-        promotion = true;
-        Piece* pieceReturned;
+          value = player->_getPieceCaptured()[0]->_getPiecePoints();
 
-        value = player->_getPieceCaptured()[0]->_getPiecePoints();
-
-        for(auto i=0 ; i < player->_getPieceCaptured().size(); i++){
-          if(value < player->_getPieceCaptured()[i]->_getPiecePoints()){
-            value = player->_getPieceCaptured()[i]->_getPiecePoints();
-            // at index
-            index = i;
+          for(auto i=0 ; i < player->_getPieceCaptured().size(); i++){
+            if(value < player->_getPieceCaptured()[i]->_getPiecePoints()){
+              value = player->_getPieceCaptured()[i]->_getPiecePoints();
+              // at index
+              index = i;
+            }
           }
-        }
 
-        if(turnOfPlayer == 2){
-          choice = toupper(player->_getPieceCaptured()[index]->_getPieceType());
-        }
-        else{
-          choice = player->_getPieceCaptured()[index]->_getPieceType();
-        }
+          if(turnOfPlayer == 2){
+            choice = toupper(player->_getPieceCaptured()[index]->_getPieceType());
+          }
+          else{
+            choice = player->_getPieceCaptured()[index]->_getPieceType();
+          }
 
-        //i'll need to test it and debug but it should work
-        pieceReturned = player->_returnPlayerPieceCaptured(choice);
-        //pushback inside ennemy player current piece on the board
-        player->_setPieceCaptured(chessBoard[toX][toY].p);
-        //switch current player piece with the one currently captured. 
-        chessBoard[toX][toY].p = pieceReturned;
+          //i'll need to test it and debug but it should work
+          pieceReturned = player->_returnPlayerPieceCaptured(choice);
+          //pushback inside ennemy player current piece on the board
+          player->_setPieceCaptured(chessBoard[toX][toY].p);
+          //switch current player piece with the one currently captured. 
+          chessBoard[toX][toY].p = pieceReturned;
+        }else{
+          promotion = false;
+        }
       }
     }
   }
   return promotion;
 }
-
-
 
 
 void Game::UndoPiecePromotion(Board chessBoard[SIZEROW][SIZECOL], Player* player1, Player* player2, int turnOfPlayer, vector<int>* position){

@@ -1,6 +1,4 @@
 
-
-//fuck this is tough
 /*
 design implementation:
 
@@ -14,7 +12,7 @@ ToDo list :
             - store() function that will store the info on current position if the state
                       wasn't found earlier in the table (after evaluation usually at the very end)
               
-          -Quiescent search`
+          -Quiescent search
             will need to use it for moves who seems rather interesting,
             it will perform a local search around that move to see if it's really a good
             move (need more info on how it should work)
@@ -23,7 +21,7 @@ ToDo list :
           
 
 */
-#include "game.h"
+#include "database.h"
 
 
 class Player;
@@ -41,11 +39,11 @@ public:
 
 
   //returns the best move
-  vector<int> _alphaBeta(Game*, Board [SIZEROW][SIZECOL], Player, Player, Piece*, int);
+  vector<int> _alphaBeta(Game*, Board [SIZEROW][SIZECOL], Player, Player, Piece*, int, DataBase*);
 
   //search methods for alphabeta pruning
-  int _minSearch(Game*,  Board [SIZEROW][SIZECOL], Player, Player, Piece*, int, int, int, bool, int, bool);
-  int _maxSearch(Game*,  Board [SIZEROW][SIZECOL], Player, Player,Piece*, int, int, int, bool, int, bool);
+  int _minSearch(Game*,  Board [SIZEROW][SIZECOL], Player, Player, Piece*, int, int, int, bool, int, bool, DataBase*);
+  int _maxSearch(Game*,  Board [SIZEROW][SIZECOL], Player, Player,Piece*, int, int, int, bool, int, bool, DataBase*);
 
   //compute the score
   int _costFun(Game*,  Board [SIZEROW][SIZECOL], int, bool, Player*, bool);

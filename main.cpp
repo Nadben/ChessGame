@@ -13,13 +13,6 @@ char choice_menu();
 int main()
 {
   gameEngine start;
-  Game game; //game
-  Skynet skynet;
-  
-  Player player1(1, 0, 4); // white
-  Player player2(2, 7, 4); // black
-
-  Board chessBoard[SIZEROW][SIZECOL]; 
 
   Piece nonPiece(0, '-', 0);
 
@@ -97,22 +90,39 @@ int main()
 
   listOfPiece.push_back(nonPiece);
 
+  bool end = false;
   // init all the Pieces on the chessBoard
-  game.initialiseBoard(listOfPiece, chessBoard);
 
-  char choice = choice_menu();
-  switch (choice)
-  {
-  case 'H':
-    start.launch(game, chessBoard, player1, player2);
-    break;
-  case 'A':
-    start.launchSkynet(game, skynet, chessBoard, player1, player2);
-    break;
-  
-  default:
-    break;
-  }
+  do{
+
+    Game game; //game
+    Skynet skynet;
+    
+    Player player1(1, 0, 4); // white
+    Player player2(2, 7, 4); // black
+
+    Board chessBoard[SIZEROW][SIZECOL]; 
+
+    game.initialiseBoard(listOfPiece, chessBoard);
+
+    char choice = choice_menu();
+    switch (choice){
+
+      case 'H':
+        start.launch(game, chessBoard, player1, player2);
+        break;
+      case 'A':
+        start.launchSkynet(game, skynet, chessBoard, player1, player2);
+        break;
+      case 'Q':
+        end = true;
+        break;
+
+      default:
+        break;
+    }
+
+  }while(end != true);
 
 
 }
@@ -122,7 +132,7 @@ char choice_menu(){
 	cout << "Hello and welcome in the chess game of death !\n"<<endl;
 	char choice;
 	do {
-		cout << "Choose a game mode :\n"<< "H - Play against a Hooman\n" << "A - Play against Skynet\n" <<endl;
+		cout << "Choose a game mode :\n"<< "H - Play against a Hooman\n" << "A - Play against Skynet\n" << "Q - Quit\n" <<endl;
 		cin >> choice;
 		choice=toupper(choice);
 	} while(choice != 'H' && choice != 'A');

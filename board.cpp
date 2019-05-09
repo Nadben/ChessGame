@@ -1,12 +1,11 @@
-//Creation de la classe board pour le board game
 #include <iostream>
 #include "board.h"
 
 
-//Surcharge du constructeur Board
+
 Board::Board(){
 
-  //initialise un board de chess avec des pointeurs null
+  //initialise a pointer to a piece once a board object is created
   p = nullptr;
 
 }

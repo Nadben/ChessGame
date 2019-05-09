@@ -1,6 +1,7 @@
-
 #include "gameEngine.h"
+#include <chrono>
 
+using namespace std::chrono;
 
 
 gameEngine::gameEngine(){}
@@ -31,13 +32,6 @@ void gameEngine::launch(Game game, Board chessBoard[SIZEROW][SIZECOL], Player pl
     while (gameOver != true)
     {
 
-        //General To Do list :
-        // - retrieve pieces once a pion reach the other end of the map depending on the player (Done)
-        // - The game ending rules (50 consecutive checks and check mate) (technically done)
-        // - castling and en passant
-        // - A.I. minimax with alpha beta pruning with dynamic programation of best moves.
-        // - reinforcing the dialog
-
         Player *player = turnOfPlayer == 1 ? &player1 : &player2;
 
         //display some information about the  current player
@@ -45,16 +39,15 @@ void gameEngine::launch(Game game, Board chessBoard[SIZEROW][SIZECOL], Player pl
         game.displayCheck(player, moveIsChecking);
         game.displayEatenPieces(player);
 
+
         do
         {
         //ask the player which piece he wants to move
         position = game.askPlayerPiece(chessBoard, player, &position);
 
-        //Compute the legalMoves no castling and no en passant yet.
+        //Compute the legalMoves no en passant yet.
         // if no legalMoves are detected and you are checked then it's checked mate
         legalMoves = game.legalMoves(chessBoard, turnOfPlayer, &position, &legalMoves, player);
-
-        //display all the pussybilities
 
         //ask for the player move ofc if the player moves doesnt comply with legalMoves then asked to get another move
         position = game.askPlayerMove(chessBoard, &position, legalMoves);
@@ -75,13 +68,19 @@ void gameEngine::launch(Game game, Board chessBoard[SIZEROW][SIZECOL], Player pl
         turnOfPlayer == 1 ? kingPos = player2._getPlayerKingPos() : kingPos = player1._getPlayerKingPos();
         moveIsChecking = game.isMoveChecking(chessBoard, kingPos, &position, &threatPos, turnOfPlayer);
 
-        turnOfPlayer = game.updateTurnOfPlayer(player);
-        if (moveIsChecking)
-        {
-        Player *player = turnOfPlayer == 1 ? &player1 : &player2;
-        gameOver = game.endGameEval(chessBoard, moveIsChecking, &threatPos, player, &nonPiece, turnOfPlayer);
-        }
         system("clear");
+
+        turnOfPlayer = game.updateTurnOfPlayer(player);
+        if (moveIsChecking){
+            Player *player = turnOfPlayer == 1 ? &player1 : &player2;
+            gameOver = game.endGameEval(chessBoard, moveIsChecking, &threatPos, player, &nonPiece, turnOfPlayer);
+            if(gameOver and player->_getPLayerConsCheck() != 50 ){
+                cout << "Check Mate !"<<endl;
+                cout << "player : "<< player->_getPlayerName() << "lost" << endl;
+            }else{
+                cout<< "Draw !"<<endl;
+            }
+        }
         game.displayBoard(chessBoard);
 
         //flush the vectors (v ,legalMoves and threats)
@@ -91,8 +90,10 @@ void gameEngine::launch(Game game, Board chessBoard[SIZEROW][SIZECOL], Player pl
     }
 }
 
-void gameEngine::launchSkynet(Game game,Skynet skynet, Board chessBoard[SIZEROW][SIZECOL], Player player1, Player player2){
+void gameEngine::launchSkynet(Game game, Skynet skynet, Board chessBoard[SIZEROW][SIZECOL], Player player1, Player player2){
     
+    DataBase myTransposeDB ;// start the database
+
     vector<int> position;
     vector<int> bestPos;
     vector<tuple<int, int>> threatPos;
@@ -109,17 +110,15 @@ void gameEngine::launchSkynet(Game game,Skynet skynet, Board chessBoard[SIZEROW]
     player2._setName('H');// human Name
 
     Piece nonPiece(0, '-', 0);
-    game.displayBoard(chessBoard);
 
     while (gameOver != true)
     {
-
-        //General To Do list :
-        // - retrieve pieces once a pion reach the other end of the map depending on the player (Done)
-        // - The game ending rules (50 consecutive move without checks and check mate) (technically done)
-        // - castling and en passant (castling done)
-        // - A.I. minimax with alpha beta pruning with dynamic programation of best moves. (Not fully finished)
-   
+        game.displayBoard(chessBoard);
+        
+        // cout<<"\n\n"<<"The DataBase contains : "<<myTransposeDB._getMap().size()<<" entries"<<endl;
+        cout<<"It got : "<<myTransposeDB._getHits()<<" Hits with this search"<<endl;
+        myTransposeDB.resetHits();
+        cout<<"\n";
 
         Player *player = turnOfPlayer == 1 ? &player1 : &player2;
 
@@ -128,9 +127,18 @@ void gameEngine::launchSkynet(Game game,Skynet skynet, Board chessBoard[SIZEROW]
         game.displayCheck(player, moveIsChecking);
         game.displayEatenPieces(player);
 
-        if (turnOfPlayer == 1)
-        {
-        position = skynet._alphaBeta(&game, chessBoard, player1, player2, &nonPiece, turnOfPlayer);
+        //display some information about the dataBase
+
+
+        if (turnOfPlayer == 1){
+
+            high_resolution_clock::time_point t1 = high_resolution_clock::now();
+            position = skynet._alphaBeta(&game, chessBoard, player1, player2, &nonPiece, turnOfPlayer, &myTransposeDB);
+            high_resolution_clock::time_point t2 = high_resolution_clock::now();
+
+            auto duration = duration_cast<seconds>( t2 - t1 ).count();
+
+            cout <<"It took : "<< duration << "s. to complete the search";
         }
 
         // game.displayBoard(chessBoard);
@@ -144,8 +152,6 @@ void gameEngine::launchSkynet(Game game,Skynet skynet, Board chessBoard[SIZEROW]
             //Compute the legalMoves no castling and no en passant yet.
             // if no legalMoves are detected and you are checked then it's checked mate
             legalMoves = game.legalMoves(chessBoard, turnOfPlayer, &position, &legalMoves, player);
-        
-            //display all the pussybilities
 
             //ask for the player move ofc if the player moves doesnt comply with legalMoves then asked to get another move
             position = game.askPlayerMove(chessBoard, &position, legalMoves);
@@ -156,6 +162,8 @@ void gameEngine::launchSkynet(Game game,Skynet skynet, Board chessBoard[SIZEROW]
 
         } while (moveIsSafe != true);
         }
+        // will return the best position to play for the current player...
+        // position = skynet._alphaBeta(&game, chessBoard, player1, player2, &nonPiece, turnOfPlayer);
 
         //move the piece on the board if it's safe
         game.movePiece(chessBoard, &position, &nonPiece, player);
@@ -167,18 +175,22 @@ void gameEngine::launchSkynet(Game game,Skynet skynet, Board chessBoard[SIZEROW]
         moveIsChecking = game.isMoveChecking(chessBoard, kingPos, &position, &threatPos, turnOfPlayer);
 
         turnOfPlayer = game.updateTurnOfPlayer(player);
-        if (moveIsChecking)
-        {
-        Player *player = turnOfPlayer == 1 ? &player1 : &player2;
-        gameOver = game.endGameEval(chessBoard, moveIsChecking, &threatPos, player, &nonPiece, turnOfPlayer);
+        if (moveIsChecking){
+            Player *player = turnOfPlayer == 1 ? &player1 : &player2;
+            gameOver = game.endGameEval(chessBoard, moveIsChecking, &threatPos, player, &nonPiece, turnOfPlayer);
+            if(gameOver and player->_getPLayerConsCheck() != 50 ){
+                cout << "Check Mate !"<<endl;
+                cout << "player : "<< player->_getPlayerName() << "lost" << endl;
+            }else if (player->_getPLayerConsCheck() == 50){
+                cout<< "Draw !"<<endl;
+            }
         }
-        system("clear");
-        game.displayBoard(chessBoard);
 
-        //flush the vectors (v ,legalMoves and threats)
         position.clear();
         legalMoves.clear();
         threatPos.clear();
+        system("clear");
+
     }
 
 }
