@@ -23,5 +23,5 @@ general ToDo list:
  A.I. toDo list:
   - Quiescence search (for the horizon problem)
   - Killer moves heuristic
-  - Random popular oppenings
+  - Random popular openings
  
