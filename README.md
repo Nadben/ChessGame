@@ -1,3 +1,5 @@
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/3677/badge)](https://bestpractices.coreinfrastructure.org/projects/3677)
+
 # Chess Game
 
 I started this project to get back into C++ after a year. I would say it was a very very fulfilling project where i learned a ton, from move generation, to binary search trees, hash tables and of course some oop concepts that i forgot. 
